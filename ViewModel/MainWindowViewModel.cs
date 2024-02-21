@@ -58,23 +58,14 @@ namespace Inventory_managment.ViewModel
         public MainWindowViewModel()
         {
             _context = new ApplicationDbContext();
-            _context.Database.EnsureCreated();
+            _context.Database.EnsureDeleted();
 
-            ClearTableRows<Bottle>();
-            ClearTableRows<Box>();
-            ClearTableRows<Pallet>();
+            _context.Database.EnsureCreated();
+            _context.SaveChanges();
 
             _missionService = new MissionService();
 
             LoadMissionAsync();
-        }
-
-        private void ClearTableRows<T>() where T : class
-        {
-            var dbSet = _context.Set<T>();
-            dbSet.RemoveRange(dbSet); // Removes all rows in the DbSet
-            _context.Database.ExecuteSqlRaw($"DELETE FROM sqlite_sequence WHERE name='{nameof(T)}'");
-            _context.SaveChanges();
         }
 
         private void CreateJsonFile()
